@@ -63,3 +63,12 @@ function create_kbarticles_taxonomy() {
         )
     );
 }
+
+//flush the rewrite rules after theme activation
+
+function kboom_rewrite_flush() {
+    kboom_post_types();
+    flush_rewrite_rules();
+}
+
+register_activation_hook( __FILE__, 'kboom_rewrite_flush');
