@@ -17,7 +17,7 @@ function kboom_post_types() {
             'labels'                => array(
                 'name'              => 'Knowledge Base Articles',
                 'menu_name'         => 'KB Articles',
-                'name_admin_bar'    => 'KB Article'
+                'name_admin_bar'    => 'KB Articles'
             ),
             'singular_label'        => 'Knowledge Base Article',
             'public'                => true,
@@ -29,13 +29,13 @@ function kboom_post_types() {
             'show_in_menu'          => true,
             'rewrite'               => array('slug' => 'kbarticle'),
             'supports'              => array('title', 'editor', 'author', 'revisions', 'comments', 'thumbnail', 'excerpt', 'page-attributes'),
-            'taxonomies'            => array('kbarticle')
+            'taxonomies'            => array('kbarticles')
         ));
 }
 
-add_action('init', 'create_kbarticle_taxonomy');
+add_action('init', 'create_kbarticles_taxonomy');
 
-function create_kbarticle_taxonomy() {
+function create_kbarticles_taxonomy() {
     $labels = array(
         'name'                          => 'KB Articles',
         'sigular_name'                  => 'KB Article',
@@ -54,7 +54,7 @@ function create_kbarticle_taxonomy() {
         'not_found'                     => 'No matching KB Article'
     );
     register_taxonomy(
-        'kbarticle',
+        'kbarticles',
         'kbarticle',
         array(
             'label'                     => __('KB Article'),
