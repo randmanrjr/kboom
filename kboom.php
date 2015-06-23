@@ -8,9 +8,9 @@ Author URI: https://github.com/randmanrjr
 */
 
 
-add_action('init','kaboom_post_types');
+add_action('init','kboom_post_types');
 
-function kaboom_post_types() {
+function kboom_post_types() {
 
     register_post_type('kaboom_post_type',
         array(
@@ -29,6 +29,37 @@ function kaboom_post_types() {
             'show_in_menu'          => true,
             'rewrite'               => array('slug' => 'kbarticle'),
             'supports'              => array('title', 'editor', 'author', 'revisions', 'comments', 'thumbnail', 'excerpt', 'page-attributes'),
-            'taxonomies'            => array('')
+            'taxonomies'            => array('kbarticle')
         ));
+}
+
+add_action('init', 'create_kbarticle_taxonomy');
+
+function create_kbarticle_taxonomy() {
+    $labels = array(
+        'name'                          => 'KB Articles',
+        'sigular_name'                  => 'KB Article',
+        'search_items'                  => 'Search Knowledge Base',
+        'all_items'                     => 'All KB Articles',
+        'edit_item'                     => 'Edit KB Article',
+        'update_item'                   => 'Update KB Article',
+        'add_new_item'                  => 'Add New KB Article',
+        'new_item_name'                 => 'New KB Article Name',
+        'menu_name'                     => 'KB Article',
+        'view_item'                     => 'View KB Article',
+        'popular_items'                 => 'Popular KB Articles',
+        'separate_items_with_commas'    => 'Separate KB Articles with commas',
+        'add_or_remove_items'           => 'Add or remove KB Articles',
+        'choose_from_most_used'         => 'Choose from the most accessed KB Aticles',
+        'not_found'                     => 'No matching KB Article'
+    );
+    register_taxonomy(
+        'kbarticle',
+        'kbarticle',
+        array(
+            'label'                     => __('KB Article'),
+            'hierarchical'              => true,
+            'labels'                    => $labels
+        )
+    );
 }
