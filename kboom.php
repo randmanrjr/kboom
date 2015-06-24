@@ -17,7 +17,9 @@ function kboom_post_types() {
             'labels'                => array(
                 'name'              => 'Knowledge Base Articles',
                 'menu_name'         => 'KB Articles',
-                'name_admin_bar'    => 'KB Articles'
+                'name_admin_bar'    => 'KB Article',
+                'add_new'           => 'New KB Article',
+                'add_new_item'      => 'Add New KB Article'
             ),
             'singular_label'        => 'Knowledge Base Article',
             'public'                => true,
