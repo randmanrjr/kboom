@@ -25,6 +25,7 @@ function kboom_post_types() {
             'public'                => true,
             'show_ui'               => true,
             'menu_position'         => 20,
+            'menu_icon'             => 'dashicons-welcome-learn-more',
             'capability_type'       => 'post',
             'has_archive'           => true,
             'hierarchical'          => true,
