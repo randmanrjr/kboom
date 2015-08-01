@@ -14,7 +14,7 @@ add_action('init','kboom_post_types');
 
 function kboom_post_types() {
 
-    register_post_type('kaboom_post_type',
+    register_post_type('kaboom',
         array(
             'labels'                => array(
                 'name'              => 'Knowledge Base Articles',
