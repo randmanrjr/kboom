@@ -88,14 +88,27 @@ function kb_search() {
                 'relation'  => 'OR',
                 array(
                     'key'   => 'text',
-                    'value' => '%{$query}%',
-                    'compare' => 'LIKE'
+                    'compare' => 'REGEXP',
+                    'value' => $query
                 ),
                 array(
                     'key'   => 'accordion',
-                    'value' => '%{$query}%',
-                    'compare' => 'LIKE'
+                    array(
+                        'key'   => 'accordion_entry',
+                        'relation' => 'OR',
+                        array(
+                            'key'   => 'title',
+                            'compare' => 'REGEXP',
+                            'value' => $query
+                        ),
+                        array(
+                            'key'   => 'content',
+                            'compare' => 'REGEXP',
+                            'value' => $query
+                        )
+                    )
                 )
+
             )
         )
     );
