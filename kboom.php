@@ -65,23 +65,51 @@ add_action('wp_ajax_kb_search','kb_search');
 add_action('wp_ajax_nopriv_kb_search', 'kb_search');
 
 function kb_search() {
+    //set $debug to true for verbose query output
+    $debug = false;
     //conduct search
     $query      = esc_attr($_POST['query'],'foundationpress');
     $searchAll  = $_POST['checkBox'];
     if ($searchAll == 'true') {$pt = 'any';} else {$pt = 'kaboom';}
-
+    //search post content
     $args       = array(
         'post_type'     => $pt,
         'post_status'   => 'publish',
         'sentence'      => 1,
         's'             => $query
     );
+    //search custom fields
+    $args2      = array(
+        'post_type'     => $pt,
+        'post_status'   => 'publish',
+        'meta_query'    => array(
+            array(
+                'key'   => 'content',
+                'relation'  => 'OR',
+                array(
+                    'key'   => 'text',
+                    'value' => '%{$query}%',
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key'   => 'accordion',
+                    'value' => '%{$query}%',
+                    'compare' => 'LIKE'
+                )
+            )
+        )
+    );
 
     $searchKB = new WP_Query($args);
+    $searchKBmeta = new WP_Query($args2);
+
+    $results = new WP_Query();
+    $results->posts = array_unique( array_merge($searchKB->posts, $searchKBmeta->posts), SORT_REGULAR);
+    $results->post_count = count($results->posts);
 
     ob_start();
 
-    if ($searchKB->have_posts()) :
+    if ($results->have_posts()) :
 
     ?>
 
@@ -90,7 +118,7 @@ function kb_search() {
     </header>
 
     <?php
-    while ( $searchKB->have_posts() ) : $searchKB->the_post();
+    while ( $results->have_posts() ) : $results->the_post();
         echo '<div>'; ?>
         <h3><a href="<?php the_permalink(); ?>"><?php the_title('', ''); ?></a></h3>
         <?php the_excerpt();
@@ -99,10 +127,15 @@ function kb_search() {
     else : ?>
     <p>No Matching Results</p>
     <?php endif;
-    wp_reset_query();
 
     $content = ob_get_clean();
 
     echo $content;
+    if ($debug == true) :
+    echo '<pre>';
+    var_dump($results);
+    echo '</pre>';
+        endif;
+    wp_reset_query();
     die();
 }
