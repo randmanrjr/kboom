@@ -86,14 +86,14 @@ function kb_search() {
     ?>
 
     <header class="page-header">
-        <h1 class="page-title"><?php printf( __( 'Search Results for: %s', 'foundationpress' ), get_search_query() ); ?></h1>
+        <h2 class="search"><?php printf( __( 'Search Results: %s', 'foundationpress' ), get_search_query() ); ?></h2>
     </header>
 
     <?php
     while ( $searchKB->have_posts() ) : $searchKB->the_post();
-        echo '<div>';
-        the_title('<h3>', '</h3>');
-        the_excerpt();
+        echo '<div>'; ?>
+        <h3><a href="<?php the_permalink(); ?>"><?php the_title('', ''); ?></a></h3>
+        <?php the_excerpt();
         echo '</div>';
     endwhile;
     else : ?>
