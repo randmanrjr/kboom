@@ -47,3 +47,62 @@ function kboom_rewrite_flush() {
 }
 
 register_activation_hook( __FILE__, 'kboom_rewrite_flush');
+
+//ajax search enqueues
+
+function ajax_search_enqueues() {
+    if (is_page('knowledge-base')) :
+        wp_enqueue_script( 'ajax-search', plugin_dir_url(__FILE__) . 'ajax-search.js', array( 'jquery' ), '1.0.0', true );
+        wp_localize_script( 'ajax-search', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+    endif;
+}
+
+add_action('wp_enqueue_scripts','ajax_search_enqueues');
+
+//handle search request via admin-ajax.php
+
+add_action('wp_ajax_kb_search','kb_search');
+add_action('wp_ajax_nopriv_kb_search', 'kb_search');
+
+function kb_search() {
+    //conduct search
+    $query      = esc_attr($_POST['query'],'foundationpress');
+    $searchAll  = $_POST['checkBox'];
+    if ($searchAll == 'true') {$pt = 'any';} else {$pt = 'kaboom';}
+
+    $args       = array(
+        'post_type'     => $pt,
+        'post_status'   => 'publish',
+        'sentence'      => 1,
+        's'             => $query
+    );
+
+    $searchKB = new WP_Query($args);
+
+    ob_start();
+
+    if ($searchKB->have_posts()) :
+
+    ?>
+
+    <header class="page-header">
+        <h1 class="page-title"><?php printf( __( 'Search Results for: %s', 'foundationpress' ), get_search_query() ); ?></h1>
+    </header>
+
+    <?php
+    while ( $searchKB->have_posts() ) : $searchKB->the_post();
+        echo '<div>';
+        the_title('<h3>', '</h3>');
+        the_excerpt();
+        echo '</div>';
+    endwhile;
+    else : ?>
+    <p>No Matching Results</p>
+    <?php endif;
+    wp_reset_query();
+
+    $content = ob_get_clean();
+
+    echo $content;
+    die();
+}
