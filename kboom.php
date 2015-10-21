@@ -78,44 +78,34 @@ function kb_search() {
         'sentence'      => 1,
         's'             => $query
     );
-    //search custom fields
+    //args for searching ACF sub fields for the flexible content layout
     $args2      = array(
         'post_type'     => $pt,
         'post_status'   => 'publish',
         'meta_query'    => array(
+            'relation'  => 'OR',
             array(
-                'key'   => 'content',
-                'relation'  => 'OR',
-                array(
-                    'key'   => 'text',
-                    'compare' => 'REGEXP',
-                    'value' => $query
-                ),
-                array(
-                    'key'   => 'accordion',
-                    array(
-                        'key'   => 'accordion_entry',
-                        'relation' => 'OR',
-                        array(
-                            'key'   => 'title',
-                            'compare' => 'REGEXP',
-                            'value' => $query
-                        ),
-                        array(
-                            'key'   => 'content',
-                            'compare' => 'REGEXP',
-                            'value' => $query
-                        )
-                    )
-                )
-
+                'key'   => 'content_%_text',
+                'compare' => 'LIKE',
+                'value' => $query
+            ),
+            array(
+                'key'   => 'content_%_accordion_entry_%_title',
+                'compare' => 'LIKE',
+                'value' => $query
+            ),
+            array(
+                'key'   => 'content_%_accordion_entry_%_content',
+                'compare' => 'LIKE',
+                'value' => $query
             )
         )
     );
-
+    //query posts
     $searchKB = new WP_Query($args);
+    //query ACF meta fields
     $searchKBmeta = new WP_Query($args2);
-
+    //merge queries for complete site content search
     $results = new WP_Query();
     $results->posts = array_unique( array_merge($searchKB->posts, $searchKBmeta->posts), SORT_REGULAR);
     $results->post_count = count($results->posts);
@@ -134,11 +124,32 @@ function kb_search() {
     while ( $results->have_posts() ) : $results->the_post();
         echo '<div>'; ?>
         <h3><a href="<?php the_permalink(); ?>"><?php the_title('', ''); ?></a></h3>
-        <?php the_excerpt();
+        <?php //checks to see if post contains an ACF flexible content layout ?>
+        <?php if (have_rows('content')) :
+            $incr = 0;
+            while (have_rows('content')) : the_row();
+                if (get_row_layout() == 'text') :
+                    if ($incr < 1) : //only displays the first text subfield encountered
+                        $text = wp_strip_all_tags(get_sub_field('text'));
+                        $length = 200;
+                         if (strlen($text) > $length) :
+                            $text = substr($text, 0, strpos($text, ' ', $length));//create and excerpt ?>
+                            <p><?php echo $text;?><a href="<?php the_permalink(); ?>"> Read more...</a></p>
+                        <?php else : ?>
+                            <p><?php echo $text;?><a href="<?php the_permalink(); ?>"> Read more...</a></p>
+                    <?php endif;
+                    endif;
+                endif;
+            $incr++;
+            endwhile;
+            else :
+                //if no ACF flexible content layout use post excerpt
+                the_excerpt();
+            endif;
         echo '</div>';
     endwhile;
     else : ?>
-    <p>No Matching Results</p>
+    <p style="color: #FF8300">No Matching Results</p>
     <?php endif;
 
     $content = ob_get_clean();
@@ -152,3 +163,10 @@ function kb_search() {
     wp_reset_query();
     die();
 }
+
+//custom filter for querying ACF sub fields that accounts for the unknown row number(s)
+function my_meta_posts_where($where) {
+    $where = str_replace("meta_key = 'content_%", "meta_key LIKE 'content_%", $where);
+    return $where;
+}
+add_filter('posts_where','my_meta_posts_where');
