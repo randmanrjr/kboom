@@ -115,6 +115,7 @@ function kb_search() {
     if ($results->have_posts()) :
 
     ?>
+    <div class="panel">
 
     <header class="page-header">
         <h2 class="search"><?php printf( __( 'Search Results: %s', 'foundationpress' ), get_search_query() ); ?></h2>
@@ -147,9 +148,13 @@ function kb_search() {
                 the_excerpt();
             endif;
         echo '</div>';
-    endwhile;
-    else : ?>
-    <p style="color: #FF8300">No Matching Results</p>
+    endwhile; ?>
+        </div>
+   <?php else : ?>
+        <div class="panel">
+            <h2 style="color: #FF8300">No Matching Results</h2>
+            <p>Modify your query and please try searching again.</p>
+        </div>
     <?php endif;
 
     $content = ob_get_clean();
