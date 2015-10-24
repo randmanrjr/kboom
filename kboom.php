@@ -53,7 +53,7 @@ register_activation_hook( __FILE__, 'kboom_rewrite_flush');
 add_action('wp_enqueue_scripts','ajax_search_enqueues');
 
 function ajax_search_enqueues() {
-    if (is_page('knowledge-base')) :
+    if (is_page('knowledge-base') || is_search()) :
         $ajax_nonce = wp_create_nonce('kb-ajax-request');
         wp_enqueue_script( 'ajax-search', plugin_dir_url(__FILE__) . 'ajax-search.js', array( 'jquery' ), '1.0.0', true );
         wp_localize_script( 'ajax-search', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ), 'ajaxnonce' => $ajax_nonce ) );
@@ -120,7 +120,7 @@ function kb_search() {
     <div class="panel">
 
     <header class="page-header">
-        <h2 class="search"><?php printf( __( 'Search Results: %s', 'foundationpress' ), get_search_query() ); ?></h2>
+        <h2 class="search"><?php printf( __( 'Search Results for: %s', 'foundationpress' ), '"' . $query . '"' ); ?></h2>
     </header>
 
     <?php

@@ -4,6 +4,7 @@ $(document).on('submit', '#search-panel form', function() {
     var query       = $input.val();
     var checkBox    = false;
     if ($('input:checkbox').is(':checked')) { checkBox = true; }
+    if ($('input[name="main_search"]').val() === 'true') { checkBox = true; }
     var $content    = jQuery('#content');
 
     jQuery.ajax({
