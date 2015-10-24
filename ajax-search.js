@@ -4,7 +4,7 @@ $(document).on('submit', '#search-panel form', function() {
     var query       = $input.val();
     var checkBox    = false;
     if ($('input:checkbox').is(':checked')) { checkBox = true; }
-    var $content    = jQuery('#content')
+    var $content    = jQuery('#content');
 
     jQuery.ajax({
         type    : 'post',
@@ -26,4 +26,4 @@ $(document).on('submit', '#search-panel form', function() {
     });
 
     return false;
-})
+});
