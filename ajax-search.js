@@ -1,4 +1,4 @@
-$(document).on('submit', '#search-panel form', function() {
+$(document).on('submit', '#search-panel form', function () {
     var $form       = jQuery(this);
     var $input      = $form.find('input[name="s"]');
     var query       = $input.val();
