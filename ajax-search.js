@@ -11,6 +11,7 @@ $(document).on('submit', '#search-panel form', function() {
         url     : myAjax.ajaxurl,
         data    : {
             action  : 'kb_search',
+            security: myAjax.ajaxnonce,
             query   : query,
             checkBox: checkBox
         },

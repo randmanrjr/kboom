@@ -50,14 +50,15 @@ register_activation_hook( __FILE__, 'kboom_rewrite_flush');
 
 //ajax search enqueues
 
+add_action('wp_enqueue_scripts','ajax_search_enqueues');
+
 function ajax_search_enqueues() {
     if (is_page('knowledge-base')) :
+        $ajax_nonce = wp_create_nonce('kb-ajax-request');
         wp_enqueue_script( 'ajax-search', plugin_dir_url(__FILE__) . 'ajax-search.js', array( 'jquery' ), '1.0.0', true );
-        wp_localize_script( 'ajax-search', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+        wp_localize_script( 'ajax-search', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ), 'ajaxnonce' => $ajax_nonce ) );
     endif;
 }
-
-add_action('wp_enqueue_scripts','ajax_search_enqueues');
 
 //handle search request via admin-ajax.php
 
@@ -65,6 +66,7 @@ add_action('wp_ajax_kb_search','kb_search');
 add_action('wp_ajax_nopriv_kb_search', 'kb_search');
 
 function kb_search() {
+    check_ajax_referer('kb-ajax-request', 'security');
     //set $debug to true for verbose query output
     $debug = false;
     //conduct search
